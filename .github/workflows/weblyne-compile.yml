@@ -32,7 +32,6 @@ jobs:
         emcc sdldoom-1.10/*.c -o build/index.html \
           --preload-file sdldoom-1.10 \
           --preload-file sdldoom-1.10/doom.wad \
-          --preload-file sdldoom-1.10/volta_doom.wad \
           -s ALLOW_MEMORY_GROWTH=1 \
           --shell-file shell.html \
           -s USE_SDL=1
