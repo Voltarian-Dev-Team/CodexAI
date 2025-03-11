@@ -22,11 +22,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y emscripten automake libsdl2-dev libsdl2-mixer-dev libsdl2-net-dev
 
-      - name: Run clean script
-        run: ./scripts/clean.sh
-        
-      - name: Run build script
-        run: ./scripts/build.sh
+      - name: Grant execute permission and run clean script
+        run: |
+          chmod +x ./scripts/clean.sh
+          ./scripts/clean.sh
+
+      - name: Grant execute permission and run build script
+        run: |
+          chmod +x ./scripts/build.sh
+          ./scripts/build.sh
 
   deploy:
     runs-on: ubuntu-latest
