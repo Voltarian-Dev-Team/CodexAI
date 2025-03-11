@@ -1,4 +1,4 @@
-name: Build and Deploy WebLyne
+name: Build and Deploy WebLyne Doom
 
 on:
   push:
@@ -9,55 +9,31 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Install Specific Emscripten Version
-      - name: Install Emscripten SDK
+      - name: Install dependencies
         run: |
-          git clone https://github.com/emscripten-core/emsdk.git
-          cd emsdk
-          ./emsdk install 3.1.40
-          ./emsdk activate 3.1.40
-          source ./emsdk_env.sh
+          sudo apt-get update
+          sudo apt-get install -y emscripten automake libsdl2-dev libsdl2-mixer-dev libsdl2-net-dev
 
-      # Step 3: Compile WebLyne
-      - name: Compile WebLyne
-        run: |
-          mkdir -p build
-          emcc sdldoom-1.10/*.c -o build/index.html \
-            --preload-file sdldoom-1.10 \
-            --preload-file sdldoom-1.10/doom.wad \
-            -s ALLOW_MEMORY_GROWTH=1 \
-            --shell-file shell.html \
-            -s USE_SDL=1
+      - name: Run clean script
+        run: ./scripts/clean.sh
 
-      # Step 4: Setup Pages
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+        run: ./scripts/build.sh
 
-      # Step 5: Upload build artifacts for deployment
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './build/'
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
 
-      # Step 6: Deploy to GitHub Pages
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/configure-pages@v5
