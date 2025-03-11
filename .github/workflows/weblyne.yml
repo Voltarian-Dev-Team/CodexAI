@@ -23,19 +23,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
+      # Step 2: Install Specific Emscripten Version
       - name: Install Emscripten SDK
         run: |
-          sudo apt-get update
-          sudo apt-get install -y emscripten
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install 3.1.40
+          ./emsdk activate 3.1.40
+          source ./emsdk_env.sh
 
+      # Step 3: Compile WebLyne
       - name: Compile WebLyne
         run: |
           mkdir -p build
@@ -46,14 +47,17 @@ jobs:
             --shell-file shell.html \
             -s USE_SDL=1
 
+      # Step 4: Setup Pages
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # Step 5: Upload build artifacts for deployment
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './build/'
 
+      # Step 6: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
