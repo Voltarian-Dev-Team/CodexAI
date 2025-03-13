@@ -29,11 +29,10 @@ jobs:
       - name: Set up environment
         run: |
           echo Setting up Emscripten...
-          choco install emscripten -y
-          refreshenv
+          choco install emscripten
           echo Emscripten is ready.
 
-      - name: Compile SDL Doom
+      - name: Compile WebLyne Doom
         run: |
           @echo off
           setlocal enabledelayedexpansion
