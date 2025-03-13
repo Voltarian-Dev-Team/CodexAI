@@ -1052,7 +1052,7 @@ printf("added\n");
 		    I_Error("\nThis is not the registered version.");
     }
 
-    // Iff additonal PWAD files are used, print modified banner
+    // If additonal PWAD files are used, print modified banner
     if (modifiedgame)
     {
 	/*m*/printf (
@@ -1063,7 +1063,6 @@ printf("added\n");
 	    "                      press enter to continue\n"
 	    "===========================================================================\n"
 	    );
-	getchar ();
     }
 
 

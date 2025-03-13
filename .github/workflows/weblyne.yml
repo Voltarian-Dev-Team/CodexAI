@@ -1,4 +1,4 @@
-name: Build and Deploy WebLyne
+name: Build and Deploy SDL Doom
 
 on:
   push:
@@ -20,30 +20,46 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install Emscripten SDK
+      - name: Set up environment
         run: |
-          sudo apt-get update
-          sudo apt-get install -y emscripten
+          echo Setting up Emscripten...
+          choco install emscripten -y
+          refreshenv
+          echo Emscripten is ready.
 
-      - name: Compile WebLyne
+      - name: Compile SDL Doom
         run: |
-          mkdir -p build
-          emcc sdldoom-1.10/*.c -o build/index.html \
-            --preload-file sdldoom-1.10 \
-            --preload-file sdldoom-1.10/doom.wad \
-            -s ALLOW_MEMORY_GROWTH=1 \
-            --shell-file shell.html \
+          @echo off
+          setlocal enabledelayedexpansion
+
+          :: Set output directory
+          set OUTPUT_DIR=%cd%\build
+          mkdir %OUTPUT_DIR%
+
+          :: Change directory to source folder
+          cd sdldoom-1.10
+
+          :: Collect source files
+          set SRC_FILES=
+          for %%f in (*.c) do (
+              set SRC_FILES=!SRC_FILES! %%f
+          )
+
+          :: Set output file
+          set OUTPUT_HTML=%OUTPUT_DIR%\index.html
+
+          :: Compile using emcc
+          emcc !SRC_FILES! -o !OUTPUT_HTML! ^
+            --preload-file . ^
+            --preload-file doom.wad ^
+            -s ALLOW_MEMORY_GROWTH=1 ^
+            --shell-file ..\shell.html ^
             -s USE_SDL=1
 
       - name: Upload artifact
@@ -53,7 +69,7 @@ jobs:
           path: 'build/'
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
 
     steps:
