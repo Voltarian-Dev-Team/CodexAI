@@ -39,7 +39,6 @@ jobs:
 
           :: Set output directory
           set OUTPUT_DIR=%cd%\build
-          mkdir %OUTPUT_DIR%
 
           :: Change directory to source folder
           cd sdldoom-1.10
