@@ -1,90 +1,20 @@
-name: Build and Deploy SDL Doom
+name: Deploy WebLyne DOOM® to GitHub Pages
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+      - main 
 
 jobs:
-  build:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up environment
-        run: |
-          echo Setting up Emscripten...
-          choco install emscripten
-          echo Emscripten is ready.
-
-      - name: Compile WebLyne Doom
-        shell: cmd
-        run: |
-          setlocal enabledelayedexpansion
-
-          :: Set output directory
-          set OUTPUT_DIR=%cd%\build
-
-          :: Change directory to source folder
-          cd sdldoom-1.10
-
-          :: Collect source files
-          set SRC_FILES=
-          for %%f in (*.c) do (
-              set SRC_FILES=!SRC_FILES! %%f
-          )
-
-          :: Set output file
-          set OUTPUT_HTML=%OUTPUT_DIR%\index.html
-
-          :: Compile using emcc
-          emcc !SRC_FILES! -o !OUTPUT_HTML! ^
-            --preload-file . ^
-            --preload-file doom.wad ^
-            -s ALLOW_MEMORY_GROWTH=1 ^
-            --shell-file ..\shell.html ^
-            -s USE_SDL=1
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: 'build/'
-
   deploy:
-    runs-on: windows-latest
-    needs: build
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: 'build/'
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'build/'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    - name: Deploy WebLyne DOOM® to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build
