@@ -33,6 +33,7 @@ jobs:
           echo Emscripten is ready.
 
       - name: Compile WebLyne Doom
+        shell: cmd
         run: |
           setlocal enabledelayedexpansion
 
