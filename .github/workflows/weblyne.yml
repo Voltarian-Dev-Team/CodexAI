@@ -37,32 +37,30 @@ jobs:
         run: |
           # Enable strict error handling
           $ErrorActionPreference = "Stop"
-
+        
           # Set output directory
           $OUTPUT_DIR = Join-Path -Path (Get-Location) -ChildPath "build"
           if (!(Test-Path -Path $OUTPUT_DIR)) {
               New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
           }
-
+        
           # Change directory to source folder
           Set-Location -Path "sdldoom-1.10"
 
           # Collect source files
           $SRC_FILES = Get-ChildItem -Filter *.c | ForEach-Object { $_.FullName }
-
+        
           # Set output HTML file
           $OUTPUT_HTML = Join-Path -Path $OUTPUT_DIR -ChildPath "index.html"
-
-          # Compile using emcc
-          $COMMAND = @"
-          emcc $($SRC_FILES -join ' ') -o $OUTPUT_HTML `
+        
+          # Compile using emcc (no concatenation needed)
+          & emcc $SRC_FILES -o $OUTPUT_HTML `
             --preload-file . `
             --preload-file doom.wad `
             -s ALLOW_MEMORY_GROWTH=1 `
             --shell-file ..\shell.html `
-            -s USE_SDL=1
-          "@
-          Invoke-Expression -Command $COMMAND
+            -s USE_SDL=1 2> ..\error.log
+        
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
