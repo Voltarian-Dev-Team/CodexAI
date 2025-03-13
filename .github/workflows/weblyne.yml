@@ -33,34 +33,32 @@ jobs:
           echo Emscripten is ready.
 
       - name: Compile WebLyne Doom
-        shell: pwsh
         run: |
-          # Enable strict error handling
-          $ErrorActionPreference = "Stop"
-        
-          # Set output directory
-          $OUTPUT_DIR = Join-Path -Path (Get-Location) -ChildPath "build"
-          if (!(Test-Path -Path $OUTPUT_DIR)) {
-              New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
-          }
-        
-          # Change directory to source folder
-          Set-Location -Path "sdldoom-1.10"
+          setlocal enabledelayedexpansion
 
-          # Collect source files
-          $SRC_FILES = Get-ChildItem -Filter *.c | ForEach-Object { $_.FullName }
-        
-          # Set output HTML file
-          $OUTPUT_HTML = Join-Path -Path $OUTPUT_DIR -ChildPath "index.html"
-        
-          # Compile using emcc (no concatenation needed)
-          & emcc $SRC_FILES -o $OUTPUT_HTML `
-            --preload-file . `
-            --preload-file doom.wad `
-            -s ALLOW_MEMORY_GROWTH=1 `
-            --shell-file ..\shell.html `
-            -s USE_SDL=1 2> ..\error.log
-        
+          :: Set output directory
+          set OUTPUT_DIR=%cd%\build
+          mkdir %OUTPUT_DIR%
+
+          :: Change directory to source folder
+          cd sdldoom-1.10
+
+          :: Collect source files
+          set SRC_FILES=
+          for %%f in (*.c) do (
+              set SRC_FILES=!SRC_FILES! %%f
+          )
+
+          :: Set output file
+          set OUTPUT_HTML=%OUTPUT_DIR%\index.html
+
+          :: Compile using emcc
+          emcc !SRC_FILES! -o !OUTPUT_HTML! ^
+            --preload-file . ^
+            --preload-file doom.wad ^
+            -s ALLOW_MEMORY_GROWTH=1 ^
+            --shell-file ..\shell.html ^
+            -s USE_SDL=1
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
