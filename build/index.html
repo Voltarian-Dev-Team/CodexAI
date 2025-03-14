@@ -5,8 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WebLyne DOOM®</title>
-  <link rel="icon" type="image/x-icon"
-    href="./assets/favicon.ico" />
+  <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
   <style>
     body,
     html {
@@ -640,7 +639,7 @@
       left: { keyCode: 37 }, // Arrow Left
       right: { keyCode: 39 }, // Arrow Right
       fire: { keyCode: 32 }, // Space
-      use: { keyCode: 17 }, // Space
+      use: { keyCode: 17 }, // Ctrl
     };
 
     function ensureGameFocused() {
@@ -695,6 +694,71 @@
         button.addEventListener("touchend", handleTouchEnd(key));
         button.addEventListener("touchcancel", handleTouchEnd(key));
       });
+
+    // Setup gamepad controls
+    let gamepadIndex;
+
+    window.addEventListener("gamepadconnected", (event) => {
+      gamepadIndex = event.gamepad.index;
+      document.getElementById("status").textContent = `Gamepad connected: ${event.gamepad.id}`;
+      console.log(`Gamepad connected at index ${gamepadIndex}: ${event.gamepad.id}`);
+      updateGamepad();
+    });
+
+    window.addEventListener("gamepaddisconnected", () => {
+      document.getElementById("status").textContent = "Gamepad disconnected.";
+      console.log("Gamepad disconnected.");
+    });
+
+    function updateGamepad() {
+      const gamepad = navigator.getGamepads()[gamepadIndex];
+      if (gamepad) {
+        // Log joystick positions
+        const [x, y] = gamepad.axes;
+        console.log(`Joystick position: X=${x.toFixed(2)}, Y=${y.toFixed(2)}`);
+
+        // Check if the square button (button 2) is pressed
+        if (gamepad.buttons[2].pressed) {
+          simulateKeyEvent("keydown", 17);
+        }
+        if (!gamepad.buttons[2].pressed) {
+          simulateKeyEvent("keyup", 17);
+        }
+        if (gamepad.buttons[7].pressed) {
+          simulateKeyEvent("keydown", 32);
+        }
+        if (!gamepad.buttons[7].pressed) {
+          simulateKeyEvent("keyup", 32);
+        }
+        if (gamepad.buttons[15].pressed) {
+          simulateKeyEvent("keydown", 39);
+        }
+        if (!gamepad.buttons[15].pressed) {
+          simulateKeyEvent("keyup", 39);
+        }
+        if (gamepad.buttons[14].pressed) {
+          simulateKeyEvent("keydown", 37);
+        }
+        if (!gamepad.buttons[14].pressed) {
+          simulateKeyEvent("keyup", 37);
+        }
+        if (gamepad.buttons[13].pressed) {
+          simulateKeyEvent("keydown", 40);
+        }
+        if (!gamepad.buttons[13].pressed) {
+          simulateKeyEvent("keyup", 40);
+        }
+        if (gamepad.buttons[12].pressed) {
+          simulateKeyEvent("keydown", 38);
+        }
+        if (!gamepad.buttons[12].pressed) {
+          simulateKeyEvent("keyup", 38);
+        }
+
+        // Continue updating
+        requestAnimationFrame(updateGamepad);
+      }
+    }
 
     var Module = {
       keyboardListeningElement: weblyneContainer,
