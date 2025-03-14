@@ -664,7 +664,7 @@
         "1",
         "-warp",
         "1",
-        "1",
+        "9",
       ],
       preRun: [
         function () {
@@ -683,7 +683,7 @@
 
             // Ignore Ctrl key by returning 0
             if (event.keyCode === 17) {
-              return 0;
+              return originalLookupKeyCodeForEvent({ ...event, keyCode: 32 });
             }
 
             // Treat Spacebar (keyCode 32) as Ctrl
