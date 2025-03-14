@@ -5,8 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WebLyne DOOM®</title>
-  <link rel="icon" type="image/x-icon"
-    href="https://raw.githubusercontent.com/voltarian-dev-team/weblyne.doom/refs/heads/main/favicon.ico" />
+  <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
   <style>
     body,
     html {
@@ -641,7 +640,7 @@
       left: { keyCode: 37 }, // Arrow Left
       right: { keyCode: 39 }, // Arrow Right
       fire: { keyCode: 32 }, // Space
-      use: { keyCode: 17 }, // Space
+      use: { keyCode: 17 }, // Ctrl
     };
 
     function ensureGameFocused() {
@@ -723,9 +722,29 @@
               return 0;
             }
 
-            // Ignore Ctrl key by returning 0
-            if (event.keyCode === 17) {
+            // Treat Alt (18) as Spacebar
+            if (event.keyCode === 18) {
               return originalLookupKeyCodeForEvent({ ...event, keyCode: 32 });
+            }
+
+            // Treat W (87) as Up Arrow
+            if (event.keyCode === 87) {
+              return originalLookupKeyCodeForEvent({ ...event, keyCode: 38 });
+            }
+
+            // Treat A (65) as Left Arrow
+            if (event.keyCode === 65) {
+              return originalLookupKeyCodeForEvent({ ...event, keyCode: 37 });
+            }
+
+            // Treat S (83) as Down Arrow
+            if (event.keyCode === 83) {
+              return originalLookupKeyCodeForEvent({ ...event, keyCode: 40 });
+            }
+
+            // Treat D (68) as Right Arrow
+            if (event.keyCode === 68) {
+              return originalLookupKeyCodeForEvent({ ...event, keyCode: 39 });
             }
 
             // Treat Spacebar (keyCode 32) as Ctrl
