@@ -715,11 +715,6 @@
     function updateGamepad() {
       const gamepad = navigator.getGamepads()[gamepadIndex];
       if (gamepad) {
-        // Log joystick positions
-        const [x, y] = gamepad.axes;
-        console.log(`Joystick position: X=${x.toFixed(2)}, Y=${y.toFixed(2)}`);
-
-        // Check if the square button (button 2) is pressed
         if (gamepad.buttons[2].pressed) {
           simulateKeyEvent("keydown", 18);
         }
