@@ -639,7 +639,7 @@
       left: { keyCode: 37 }, // Arrow Left
       right: { keyCode: 39 }, // Arrow Right
       fire: { keyCode: 32 }, // Space
-      use: { keyCode: 17 }, // Ctrl
+      use: { keyCode: 18 }, // Ctrl
     };
 
     function ensureGameFocused() {
@@ -719,10 +719,10 @@
 
         // Check if the square button (button 2) is pressed
         if (gamepad.buttons[2].pressed) {
-          simulateKeyEvent("keydown", 17);
+          simulateKeyEvent("keydown", 18);
         }
         if (!gamepad.buttons[2].pressed) {
-          simulateKeyEvent("keyup", 17);
+          simulateKeyEvent("keyup", 18);
         }
         if (gamepad.buttons[7].pressed) {
           simulateKeyEvent("keydown", 32);
