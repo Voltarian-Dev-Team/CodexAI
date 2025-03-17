@@ -699,6 +699,8 @@
 
     // Setup gamepad controls
     let gamepadIndex;
+    let toggleIndex = 0;
+    let button3Pressed = false;
 
     window.addEventListener("gamepadconnected", (event) => {
       gamepadIndex = event.gamepad.index;
@@ -750,6 +752,19 @@
         }
         if (!gamepad.buttons[12].pressed) {
           simulateKeyEvent("keyup", 38);
+        }
+
+        //Weapon Scroll
+        if (gamepad.buttons[3].pressed && !button3Pressed) {
+          button3Pressed = true;
+
+          simulateKeyEvent("keydown", 49 + toggleIndex);
+
+          toggleIndex = (toggleIndex + 1) % 7;
+        } else if (!gamepad.buttons[3].pressed && button3Pressed) {
+          button3Pressed = false;
+
+          simulateKeyEvent("keyup", 49 + (toggleIndex === 0 ? 6 : toggleIndex - 1));
         }
 
         // Continue updating
