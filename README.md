@@ -38,7 +38,7 @@ Run `build.cmd` to Compile WebLyne DOOM®
 
 ## Authors
 
-- [Voltarian Dev Team](https://www.github.com/voltarian-dev-team/)
-- [VoltacceptYT](https://github.com/voltacceptyt/)
-- [Guillermo Rauch](https://github.com/rauchg/)
+- [Voltarian Dev Team - Code Team](https://www.github.com/voltarian-dev-team/)
+- [VoltacceptYT - Code DEV](https://github.com/voltacceptyt/)
+- [Guillermo Rauch - Original Code DEV](https://github.com/rauchg/)
 
