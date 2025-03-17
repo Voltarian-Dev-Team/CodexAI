@@ -1,4 +1,4 @@
-name: Deploy WebLyne DOOM® to GitHub Pages and FTP Server
+name: Deploy WebLyne DOOM® to GitHub Pages
 
 on:
   push:
@@ -21,12 +21,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./build
-
-    - name: Upload files to FTP server
-      uses: SamKirkland/FTP-Deploy-Action@4.3.0
-      with:
-        server: "${{ secrets.FTP_SERVER }}"
-        username: "${{ secrets.FTP_USERNAME }}"
-        password: "${{ secrets.FTP_PASSWORD }}"
-        local-dir: ./build/
-        server-dir: /public_html/voltarius/weblyne.doom/
