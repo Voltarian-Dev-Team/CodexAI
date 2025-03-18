@@ -1,10 +1,9 @@
-name: Deploy WebLyne DOOM® to GitHub Pages
+name: Deploy WebLyne DOOM® to GitHub Pages and Voltarian Development
 
 on:
   push:
     branches:
-      - main 
-
+      - main
 permissions:
   contents: write
 
@@ -13,11 +12,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Deploy WebLyne DOOM® to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build 
+
+      - name: Deploy to Voltarian Development
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}  
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./build
+          server-dir: /public_html/voltarius/weblyne.doom
