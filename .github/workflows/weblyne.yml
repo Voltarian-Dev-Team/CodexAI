@@ -22,9 +22,9 @@ jobs:
           publish_dir: ./build 
 
       - name: Deploy to Voltarian Development
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}  
+          server: 82.197.91.6
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./build/
