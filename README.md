@@ -21,6 +21,3 @@ View [BUILDING.md](./BUILDING.md)
 - [Voltarian Dev Team - Code Team](https://www.github.com/voltarian-dev-team/)
 - [VoltacceptYT - Code DEV](https://github.com/voltacceptyt/)
 - [Guillermo Rauch - Original Code DEV](https://github.com/rauchg/)
-
-## Tools
-[](https://github.com/SamKirkland/FTP-Deploy-Action)

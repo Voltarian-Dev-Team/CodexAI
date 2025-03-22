@@ -798,6 +798,11 @@
               weblyneContainer.blur();
               return 0;
             }
+            
+            // Ignore Ctrl key by returning 0
+            if (event.keyCode === 17) {
+              return 0;
+            }
 
             // Treat Alt (18) as Spacebar
             if (event.keyCode === 18) {
