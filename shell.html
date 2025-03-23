@@ -510,11 +510,11 @@
         (window.vaq = window.vaq || []).push(arguments);
       };
   </script>
-  <<script>
+  <script>
     // Configuration
     const clientId = "1353142335130697758"; // Replace with your Discord app's Client ID
     let redirectUri = ""; // Dynamically determine based on the webpage
-    const scopes = "identify activities.read applications.commands.update"; // Scopes for REST API
+    const scopes = "identify presences.write"; // Use `presences.write` scope
   
     // Dynamically set Redirect URI based on the current webpage
     if (window.location.origin === "https://voltarius.voltaccept.com" && window.location.pathname === "/weblyne.doom/") {
@@ -531,6 +531,10 @@
         const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
           redirectUri
         )}&response_type=token&scope=${encodeURIComponent(scopes)}`;
+  
+        // Debug: Log the authorization URL for verification
+        console.log("Authorization URL:", authUrl);
+  
         window.location.href = authUrl;
       } else {
         console.error("Redirect URI is not defined. Cannot proceed with authorization.");
@@ -542,6 +546,7 @@
       if (window.location.hash) {
         const params = new URLSearchParams(window.location.hash.slice(1));
         const accessToken = params.get("access_token");
+  
         if (accessToken) {
           console.log("Access Token:", accessToken);
   
@@ -559,7 +564,7 @@
             buttons: [
               {
                 label: "Play WebLyne DOOM®",
-                url: `${redirect_uri}`,
+                url: `${redirectUri}`, // Use dynamically set Redirect URI
               },
             ],
           };
@@ -588,7 +593,9 @@
           if (xhr.status >= 200 && xhr.status < 300) {
             console.log("User Info:", JSON.parse(xhr.responseText));
           } else {
-            console.error(`Failed to authenticate. Status: ${xhr.status}, Error: ${xhr.statusText}`);
+            console.error(
+              `Failed to authenticate. Status: ${xhr.status}, Error: ${xhr.statusText}`
+            );
           }
         }
       };
@@ -602,7 +609,7 @@
   
     // Function to Update Rich Presence using the REST API
     function updateRichPresence(accessToken, richPresenceData) {
-      const url = `https://discord.com/api/v10/applications/${clientId}/activities`;
+      const url = `https://discord.com/api/v10/users/@me/presence`;
   
       const headers = {
         Authorization: `Bearer ${accessToken}`, // Use the OAuth2 access token
@@ -610,12 +617,13 @@
       };
   
       const body = JSON.stringify({
-        activity: richPresenceData,
-        type: 0, // Activity type (0 = Playing, 1 = Streaming, etc.)
+        activities: [richPresenceData], // Wrap data in "activities" array
+        status: "online", // Presence status (e.g., online, dnd, idle)
+        since: Date.now(), // Time since the presence started
       });
   
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", url, true);
+      xhr.open("PATCH", url, true); // Use PATCH for presence updates
   
       xhr.setRequestHeader("Authorization", headers.Authorization);
       xhr.setRequestHeader("Content-Type", headers["Content-Type"]);
@@ -625,7 +633,9 @@
           if (xhr.status >= 200 && xhr.status < 300) {
             console.log("Rich Presence updated successfully!");
           } else {
-            console.error(`Failed to update Rich Presence. Status: ${xhr.status}, Error: ${xhr.statusText}`);
+            console.error(
+              `Failed to update Rich Presence. Status: ${xhr.status}, Error: ${xhr.statusText}`
+            );
           }
         }
       };
@@ -637,7 +647,6 @@
       xhr.send(body);
     }
   </script>
-  
   <script>
 
     // Handle taps outside the canvas container
