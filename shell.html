@@ -406,6 +406,24 @@
       opacity: 0.5;
     }
 
+    .vtd-footer button {
+      width: 30px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      font-size: 14px;
+      margin-right: 5px;
+      border-radius: 50%;
+      pointer-events: auto;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .vtd-footer button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
     .vtd-love-icon {
       width: 12px;
       height: 12px;
@@ -423,6 +441,8 @@
         d="M3.636 7.208L10 13.572l6.364-6.364a3 3 0 1 0-4.243-4.243L10 5.086l-2.121-2.12a3 3 0 0 0-4.243 4.242zM9.293 1.55l.707.707.707-.707a5 5 0 1 1 7.071 7.071l-7.07 7.071a1 1 0 0 1-1.415 0l-7.071-7.07a5 5 0 1 1 7.07-7.071z"
         fill-rule="evenodd" />
     </svg>
+    <span class="vtd-footer seperator">|</span>
+    <button id="authorizeButton">Authorize with Discord</button>
   </footer>
 
   <div class="weblyne-container" tabindex="1">
@@ -508,6 +528,94 @@
         (window.vaq = window.vaq || []).push(arguments);
       };
   </script>
+  <script>
+    // Configuration
+    const clientId = "1353142335130697758"; // Replace with your Discord app's Client ID
+    const redirectUri = "https://voltarian-dev-team.github.io/WebLyne.Doom/"; // Replace with your redirect URI
+    const scopes = "rpc rpc.activities.write";
+  
+    document.getElementById("authorizeButton").onclick = function () {
+      // Open OAuth2 URL to get authorization code
+      const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scopes)}`;
+      window.location.href = authUrl;
+    };
+  
+    // Extract access token from URL fragment after redirection
+    window.onload = function () {
+      if (window.location.hash) {
+        const params = new URLSearchParams(window.location.hash.slice(1));
+        const accessToken = params.get("access_token");
+        if (accessToken) {
+          console.log("Access Token:", accessToken);
+  
+          // Set Rich Presence once we have the access token
+          const richPresenceData = {
+            details: `Playing WebLyne DOOM® on ${navigator.userAgent}`,
+            assets: {
+              large_image: "discord",
+              large_text: "WebLyne DOOM®",
+            },
+            buttons: [
+              {
+                label: "Play WebLyne DOOM®", // Button label
+                url: "https://voltarian-dev-team.github.io/WebLyne.Doom/" // Button link
+              }
+            ],
+          };
+  
+          setRichPresence(clientId, accessToken, richPresenceData);
+        } else {
+          console.error("Access token not found in URL.");
+        }
+      }
+    };
+  
+    // Function to set Rich Presence
+    function setRichPresence(appId, accessToken, richPresenceData) {
+      const url = `https://discord.com/api/v9/applications/${appId}/rpc`;
+  
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      };
+  
+      const body = JSON.stringify({
+        cmd: "SET_ACTIVITY",
+        args: {
+          pid: 1234, // Replace with the process ID if necessary
+          activity: richPresenceData,
+        },
+        nonce: Math.random().toString(),
+      });
+  
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+  
+      // Set the headers
+      for (const header in headers) {
+        if (headers.hasOwnProperty(header)) {
+          xhr.setRequestHeader(header, headers[header]);
+        }
+      }
+  
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            console.log("Rich Presence updated successfully!");
+          } else {
+            console.error("Failed to set Rich Presence: " + xhr.statusText);
+          }
+        }
+      };
+  
+      xhr.onerror = function () {
+        console.error("An error occurred while sending the request.");
+      };
+  
+      xhr.send(body);
+    }
+  </script>
+  
   <script>
 
     // Handle taps outside the canvas container
