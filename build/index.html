@@ -513,24 +513,37 @@
   <script>
     // Configuration
     const clientId = "1353142335130697758"; // Replace with your Discord app's Client ID
-    const redirectUri = "https://voltarian-dev-team.github.io/WebLyne.Doom/"; // Replace with your redirect URI
+    let redirectUri = ""; // This will be set dynamically based on the webpage URL
     const scopes = "rpc rpc.activities.write";
-  
+
+    // Determine the redirect URI based on the current webpage URL
+    if (window.location.origin === "https://voltarius.voltaccept.com" && window.location.pathname === "/weblyne.doom/") {
+      redirectUri = "https://voltarius.voltaccept.com/weblyne.doom/";
+    } else if (window.location.origin === "https://voltarian-dev-team.github.io" && window.location.pathname === "/WebLyne.Doom/") {
+      redirectUri = "https://voltarian-dev-team.github.io/WebLyne.Doom/";
+    } else {
+      console.error("Unknown webpage URL. Redirect URI not set.");
+    }
+
+    // OAuth2 Authorization
     document.getElementById("authorizeButton").onclick = function () {
-      // Open OAuth2 URL to get authorization code
-      const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scopes)}`;
-      window.location.href = authUrl;
+      if (redirectUri) {
+        const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scopes)}`;
+        window.location.href = authUrl;
+      } else {
+        console.error("Redirect URI is not defined. Cannot proceed with authorization.");
+      }
     };
-  
-    // Extract access token from URL fragment after redirection
+
+    // Extract access token from URL fragment
     window.onload = function () {
       if (window.location.hash) {
         const params = new URLSearchParams(window.location.hash.slice(1));
         const accessToken = params.get("access_token");
         if (accessToken) {
           console.log("Access Token:", accessToken);
-  
-          // Set Rich Presence once we have the access token
+
+          // Define Rich Presence data
           const richPresenceData = {
             details: `Playing WebLyne DOOM® on ${navigator.userAgent}`,
             assets: {
@@ -539,47 +552,44 @@
             },
             buttons: [
               {
-                label: "Play WebLyne DOOM®", // Button label
-                url: "https://voltarian-dev-team.github.io/WebLyne.Doom/" // Button link
-              }
+                label: "Play WebLyne DOOM®",
+                url: "https://voltarian-dev-team.github.io/WebLyne.Doom/",
+              },
             ],
           };
-  
-          setRichPresence(clientId, accessToken, richPresenceData);
+
+          // Call the REST API to set Rich Presence
+          updateRichPresence(clientId, accessToken, richPresenceData);
         } else {
           console.error("Access token not found in URL.");
         }
       }
     };
-  
-    // Function to set Rich Presence
-    function setRichPresence(appId, accessToken, richPresenceData) {
-      const url = `https://discord.com/api/v9/applications/${appId}/rpc`;
-  
+
+    // Function to set Rich Presence using the REST API
+    function updateRichPresence(appId, accessToken, richPresenceData) {
+      const url = `https://discord.com/api/v10/applications/${appId}/commands`;
+
       const headers = {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       };
-  
+
       const body = JSON.stringify({
-        cmd: "SET_ACTIVITY",
-        args: {
-          pid: 1234, // Replace with the process ID if necessary
-          activity: richPresenceData,
-        },
-        nonce: Math.random().toString(),
+        activity: richPresenceData,
+        type: 0, // Activity type (e.g., 0 = Playing)
       });
-  
+
       const xhr = new XMLHttpRequest();
       xhr.open("POST", url, true);
-  
-      // Set the headers
+
+      // Set headers
       for (const header in headers) {
         if (headers.hasOwnProperty(header)) {
           xhr.setRequestHeader(header, headers[header]);
         }
       }
-  
+
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           if (xhr.status >= 200 && xhr.status < 300) {
@@ -589,15 +599,14 @@
           }
         }
       };
-  
+
       xhr.onerror = function () {
         console.error("An error occurred while sending the request.");
       };
-  
+
       xhr.send(body);
     }
   </script>
-  
   <script>
 
     // Handle taps outside the canvas container
@@ -885,7 +894,7 @@
               weblyneContainer.blur();
               return 0;
             }
-            
+
             // Ignore Ctrl key by returning 0
             if (event.keyCode === 17) {
               return 0;
