@@ -514,7 +514,7 @@
     // Configuration
     const clientId = "1353142335130697758"; // Replace with your Discord app's Client ID
     const redirectUri = "https://voltarian-dev-team.github.io/WebLyne.Doom/"; // Fixed Redirect URI
-    const scopes = "presences.write activities.write rpc rpc.activities.write"; // Updated scopes as per request
+    const scopes = "identity rpc rpc.activities.write"; // Updated scopes as per request
   
     // OAuth2 Authorization
     document.getElementById("authorizeButton").onclick = function () {
@@ -550,7 +550,7 @@
   
       const data = new URLSearchParams();
       data.append("client_id", clientId);
-      data.append("client_secret", "YOUR_CLIENT_SECRET"); // Replace with your Client Secret
+      data.append("client_secret", "M0rN0aZjKMuEeMuTawEN4Jx1T-OKWQdw"); // Replace with your Client Secret
       data.append("grant_type", "authorization_code");
       data.append("code", authCode);
       data.append("redirect_uri", redirectUri);
