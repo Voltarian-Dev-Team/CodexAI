@@ -510,13 +510,13 @@
         (window.vaq = window.vaq || []).push(arguments);
       };
   </script>
-  <script>
+  <<script>
     // Configuration
     const clientId = "1353142335130697758"; // Replace with your Discord app's Client ID
-    let redirectUri = ""; // Set dynamically based on current webpage URL
-    const scopes = "identify activities.read applications.commands.update"; // Scopes for the REST API
-
-    // Dynamically determine the Redirect URI based on the current webpage
+    let redirectUri = ""; // Dynamically determine based on the webpage
+    const scopes = "identify activities.read applications.commands.update"; // Scopes for REST API
+  
+    // Dynamically set Redirect URI based on the current webpage
     if (window.location.origin === "https://voltarius.voltaccept.com" && window.location.pathname === "/weblyne.doom/") {
       redirectUri = "https://voltarius.voltaccept.com/weblyne.doom/";
     } else if (window.location.origin === "https://voltarian-dev-team.github.io" && window.location.pathname === "/WebLyne.Doom/") {
@@ -524,7 +524,7 @@
     } else {
       console.error("Unknown webpage URL. Redirect URI not set.");
     }
-
+  
     // OAuth2 Authorization
     document.getElementById("authorizeButton").onclick = function () {
       if (redirectUri) {
@@ -536,16 +536,19 @@
         console.error("Redirect URI is not defined. Cannot proceed with authorization.");
       }
     };
-
-    // Extract access token from URL fragment
+  
+    // Extract Access Token and Perform Actions
     window.onload = function () {
       if (window.location.hash) {
         const params = new URLSearchParams(window.location.hash.slice(1));
         const accessToken = params.get("access_token");
         if (accessToken) {
           console.log("Access Token:", accessToken);
-
-          // Define Rich Presence data
+  
+          // Step 1: Test Access Token with /users/@me Endpoint
+          testAccessToken(accessToken);
+  
+          // Step 2: Update Rich Presence
           const richPresenceData = {
             details: `Playing WebLyne DOOM®`,
             state: `On ${navigator.userAgent}`,
@@ -556,60 +559,85 @@
             buttons: [
               {
                 label: "Play WebLyne DOOM®",
-                url: "https://voltarian-dev-team.github.io/WebLyne.Doom/",
+                url: `${redirect_uri}`,
               },
             ],
           };
-
-          // Send the REST API request to update Rich Presence
+  
           updateRichPresence(accessToken, richPresenceData);
         } else {
           console.error("Access token not found in URL.");
         }
       }
     };
-
-    // Function to update Rich Presence using the REST API
+  
+    // Function to Test Access Token with /users/@me
+    function testAccessToken(accessToken) {
+      const url = `https://discord.com/api/v10/users/@me`;
+  
+      const headers = {
+        Authorization: `Bearer ${accessToken}`, // Use the OAuth2 access token
+      };
+  
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.setRequestHeader("Authorization", headers.Authorization);
+  
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            console.log("User Info:", JSON.parse(xhr.responseText));
+          } else {
+            console.error(`Failed to authenticate. Status: ${xhr.status}, Error: ${xhr.statusText}`);
+          }
+        }
+      };
+  
+      xhr.onerror = function () {
+        console.error("An error occurred while sending the request.");
+      };
+  
+      xhr.send();
+    }
+  
+    // Function to Update Rich Presence using the REST API
     function updateRichPresence(accessToken, richPresenceData) {
       const url = `https://discord.com/api/v10/applications/${clientId}/activities`;
-
+  
       const headers = {
         Authorization: `Bearer ${accessToken}`, // Use the OAuth2 access token
         "Content-Type": "application/json",
       };
-
+  
       const body = JSON.stringify({
         activity: richPresenceData,
         type: 0, // Activity type (0 = Playing, 1 = Streaming, etc.)
       });
-
+  
       const xhr = new XMLHttpRequest();
       xhr.open("POST", url, true);
-
-      // Set headers
-      for (const header in headers) {
-        if (headers.hasOwnProperty(header)) {
-          xhr.setRequestHeader(header, headers[header]);
-        }
-      }
-
+  
+      xhr.setRequestHeader("Authorization", headers.Authorization);
+      xhr.setRequestHeader("Content-Type", headers["Content-Type"]);
+  
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           if (xhr.status >= 200 && xhr.status < 300) {
             console.log("Rich Presence updated successfully!");
           } else {
-            console.error(`Failed to update Rich Presence: ${xhr.statusText}`);
+            console.error(`Failed to update Rich Presence. Status: ${xhr.status}, Error: ${xhr.statusText}`);
           }
         }
       };
-
+  
       xhr.onerror = function () {
         console.error("An error occurred while sending the request.");
       };
-
+  
       xhr.send(body);
     }
   </script>
+  
   <script>
 
     // Handle taps outside the canvas container
