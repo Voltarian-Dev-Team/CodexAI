@@ -513,10 +513,10 @@
   <script>
     // Configuration
     const clientId = "1353142335130697758"; // Replace with your Discord app's Client ID
-    let redirectUri = ""; // This will be set dynamically based on the webpage URL
-    const scopes = "rpc rpc.activities.write";
+    let redirectUri = ""; // Set dynamically based on current webpage URL
+    const scopes = "identify activities.read applications.commands.update"; // Scopes for the REST API
 
-    // Determine the redirect URI based on the current webpage URL
+    // Dynamically determine the Redirect URI based on the current webpage
     if (window.location.origin === "https://voltarius.voltaccept.com" && window.location.pathname === "/weblyne.doom/") {
       redirectUri = "https://voltarius.voltaccept.com/weblyne.doom/";
     } else if (window.location.origin === "https://voltarian-dev-team.github.io" && window.location.pathname === "/WebLyne.Doom/") {
@@ -528,7 +528,9 @@
     // OAuth2 Authorization
     document.getElementById("authorizeButton").onclick = function () {
       if (redirectUri) {
-        const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scopes)}`;
+        const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+          redirectUri
+        )}&response_type=token&scope=${encodeURIComponent(scopes)}`;
         window.location.href = authUrl;
       } else {
         console.error("Redirect URI is not defined. Cannot proceed with authorization.");
@@ -545,9 +547,10 @@
 
           // Define Rich Presence data
           const richPresenceData = {
-            details: `Playing WebLyne DOOM® on ${navigator.userAgent}`,
+            details: `Playing WebLyne DOOM®`,
+            state: `On ${navigator.userAgent}`,
             assets: {
-              large_image: "discord",
+              large_image: "discord", // Replace with your large image key
               large_text: "WebLyne DOOM®",
             },
             buttons: [
@@ -558,26 +561,26 @@
             ],
           };
 
-          // Call the REST API to set Rich Presence
-          updateRichPresence(clientId, accessToken, richPresenceData);
+          // Send the REST API request to update Rich Presence
+          updateRichPresence(accessToken, richPresenceData);
         } else {
           console.error("Access token not found in URL.");
         }
       }
     };
 
-    // Function to set Rich Presence using the REST API
-    function updateRichPresence(appId, accessToken, richPresenceData) {
-      const url = `https://discord.com/api/v10/applications/${appId}/commands`;
+    // Function to update Rich Presence using the REST API
+    function updateRichPresence(accessToken, richPresenceData) {
+      const url = `https://discord.com/api/v10/applications/${clientId}/activities`;
 
       const headers = {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`, // Use the OAuth2 access token
         "Content-Type": "application/json",
       };
 
       const body = JSON.stringify({
         activity: richPresenceData,
-        type: 0, // Activity type (e.g., 0 = Playing)
+        type: 0, // Activity type (0 = Playing, 1 = Streaming, etc.)
       });
 
       const xhr = new XMLHttpRequest();
@@ -595,7 +598,7 @@
           if (xhr.status >= 200 && xhr.status < 300) {
             console.log("Rich Presence updated successfully!");
           } else {
-            console.error("Failed to set Rich Presence: " + xhr.statusText);
+            console.error(`Failed to update Rich Presence: ${xhr.statusText}`);
           }
         }
       };
