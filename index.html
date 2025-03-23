@@ -513,88 +513,86 @@
   <script>
     // Configuration
     const clientId = "1353142335130697758"; // Replace with your Discord app's Client ID
-    let redirectUri = ""; // Dynamically determine based on the webpage
-    const scopes = "identify presences.write"; // Use `presences.write` scope
-  
-    // Dynamically set Redirect URI based on the current webpage
-    if (window.location.origin === "https://voltarius.voltaccept.com" && window.location.pathname === "/weblyne.doom/") {
-      redirectUri = "https://voltarius.voltaccept.com/weblyne.doom/";
-    } else if (window.location.origin === "https://voltarian-dev-team.github.io" && window.location.pathname === "/WebLyne.Doom/") {
-      redirectUri = "https://voltarian-dev-team.github.io/WebLyne.Doom/";
-    } else {
-      console.error("Unknown webpage URL. Redirect URI not set.");
-    }
+    const redirectUri = "https://voltarian-dev-team.github.io/WebLyne.Doom/"; // Fixed Redirect URI
+    const scopes = "presences.write activities.write rpc rpc.activities.write"; // Updated scopes as per request
   
     // OAuth2 Authorization
     document.getElementById("authorizeButton").onclick = function () {
-      if (redirectUri) {
-        const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
-          redirectUri
-        )}&response_type=token&scope=${encodeURIComponent(scopes)}`;
+      const authUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=code&scope=${encodeURIComponent(scopes)}`;
   
-        // Debug: Log the authorization URL for verification
-        console.log("Authorization URL:", authUrl);
+      // Debug: Log the authorization URL for verification
+      console.log("Authorization URL:", authUrl);
   
-        window.location.href = authUrl;
-      } else {
-        console.error("Redirect URI is not defined. Cannot proceed with authorization.");
-      }
+      window.location.href = authUrl;
     };
   
     // Extract Access Token and Perform Actions
     window.onload = function () {
-      if (window.location.hash) {
-        const params = new URLSearchParams(window.location.hash.slice(1));
-        const accessToken = params.get("access_token");
+      if (window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        const authCode = params.get("code");
+        if (authCode) {
+          console.log("Authorization Code:", authCode);
   
-        if (accessToken) {
-          console.log("Access Token:", accessToken);
-  
-          // Step 1: Test Access Token with /users/@me Endpoint
-          testAccessToken(accessToken);
-  
-          // Step 2: Update Rich Presence
-          const richPresenceData = {
-            details: `Playing WebLyne DOOM®`,
-            state: `On ${navigator.userAgent}`,
-            assets: {
-              large_image: "discord", // Replace with your large image key
-              large_text: "WebLyne DOOM®",
-            },
-            buttons: [
-              {
-                label: "Play WebLyne DOOM®",
-                url: `${redirectUri}`, // Use dynamically set Redirect URI
-              },
-            ],
-          };
-  
-          updateRichPresence(accessToken, richPresenceData);
+          // Exchange Authorization Code for Access Token
+          exchangeCodeForToken(authCode);
         } else {
-          console.error("Access token not found in URL.");
+          console.error("Authorization code not found in URL.");
         }
       }
     };
   
-    // Function to Test Access Token with /users/@me
-    function testAccessToken(accessToken) {
-      const url = `https://discord.com/api/v10/users/@me`;
+    // Function to Exchange Authorization Code for Access Token
+    function exchangeCodeForToken(authCode) {
+      const tokenUrl = "https://discord.com/api/v10/oauth2/token";
+  
+      const data = new URLSearchParams();
+      data.append("client_id", clientId);
+      data.append("client_secret", "YOUR_CLIENT_SECRET"); // Replace with your Client Secret
+      data.append("grant_type", "authorization_code");
+      data.append("code", authCode);
+      data.append("redirect_uri", redirectUri);
   
       const headers = {
-        Authorization: `Bearer ${accessToken}`, // Use the OAuth2 access token
+        "Content-Type": "application/x-www-form-urlencoded",
       };
   
       const xhr = new XMLHttpRequest();
-      xhr.open("GET", url, true);
-      xhr.setRequestHeader("Authorization", headers.Authorization);
+      xhr.open("POST", tokenUrl, true);
+  
+      for (const header in headers) {
+        xhr.setRequestHeader(header, headers[header]);
+      }
   
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           if (xhr.status >= 200 && xhr.status < 300) {
-            console.log("User Info:", JSON.parse(xhr.responseText));
+            const response = JSON.parse(xhr.responseText);
+            const accessToken = response.access_token;
+            console.log("Access Token:", accessToken);
+  
+            // Update Rich Presence
+            const richPresenceData = {
+              details: `Playing WebLyne DOOM®`,
+              state: `On ${navigator.userAgent}`,
+              assets: {
+                large_image: "discord", // Replace with your large image key
+                large_text: "WebLyne DOOM®",
+              },
+              buttons: [
+                {
+                  label: "Play WebLyne DOOM®",
+                  url: redirectUri, // Use the fixed redirect URI
+                },
+              ],
+            };
+  
+            updateRichPresence(accessToken, richPresenceData);
           } else {
             console.error(
-              `Failed to authenticate. Status: ${xhr.status}, Error: ${xhr.statusText}`
+              `Failed to exchange code for token. Status: ${xhr.status}, Error: ${xhr.statusText}`
             );
           }
         }
@@ -604,7 +602,7 @@
         console.error("An error occurred while sending the request.");
       };
   
-      xhr.send();
+      xhr.send(data);
     }
   
     // Function to Update Rich Presence using the REST API
@@ -623,7 +621,7 @@
       });
   
       const xhr = new XMLHttpRequest();
-      xhr.open("PATCH", url, true); // Use PATCH for presence updates
+      xhr.open("PATCH", url, true);
   
       xhr.setRequestHeader("Authorization", headers.Authorization);
       xhr.setRequestHeader("Content-Type", headers["Content-Type"]);
