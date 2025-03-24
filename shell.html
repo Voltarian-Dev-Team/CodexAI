@@ -505,7 +505,23 @@
         (window.vaq = window.vaq || []).push(arguments);
       };
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/discord-rich-presence@0.0.8/browser.min.js"></script>
   <script>
+    const client = require('discord-rich-presence')('1353142335130697758');
+    
+    client.updatePresence({
+      details: "Weblyne DOOM®: A browser-based Doom Port",
+      state: "Playing",
+      startTimestamp: Date.now(),
+      largeImageKey: "weblyne_helm",
+      instance: true,
+      buttons: [
+        {
+          label: "Play Weblyne DOOM®",
+          url: "https://voltarian-dev-team.github.io/WebLyne.Doom",
+        },
+      ],
+    });
 
     // Handle taps outside the canvas container
     document.addEventListener("touchstart", (e) => {
