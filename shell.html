@@ -524,7 +524,6 @@
     const killcountButton = document.getElementById("killcount-button");
     const weblyneContainer = document.querySelector(".weblyne-container");
     const refreshButton = document.getElementById("refresh-button");
-    const shapes = { doomLogo: confetti.shapeFromText({ text: 'DOOM', scalar }), weblyneLogo: confetti.shapeFromText({ text: 'WebLyne', scalar }) };
     const backButton = document.getElementById("back-button");
     let isDebugActive = false;
     let enemiesKilled = 0;
@@ -595,6 +594,9 @@
       `;
       document.body.appendChild(successDiv);
 
+      // Set the shapes for confetti effect
+      const shapes = { killConfetti: confetti.shapeFromText({ text: 'WebLyne', scalar }) };
+
       // Lazy load and trigger confetti
       const script = document.createElement("script");
       script.src =
@@ -603,8 +605,8 @@
         confetti({
           particleCount: 100,
           spread: 70,
-          origin: { y: 0.6 },
-          shapes: [shapes.doomLogo, shapes.weblyneLogo]
+          origin: { y: 0.5 },
+          shapes: [shapes.killConfetti]
         });
       };
       script.onerror = () => {
@@ -802,6 +804,9 @@
           ".weblyne-killcount-icon path",
         );
 
+        // Set the shapes for confetti effect
+        const shapes = { killConfetti: confetti.shapeFromText({ text: 'WebLyne', scalar }) };
+
         // Reset animations
         killcountButton.style.animation = "none";
         iconPath.style.animation = "none";
@@ -829,8 +834,8 @@
           confetti({
             particleCount: 100,
             spread: 70,
-            origin: { y: 0.6 },
-            shapes: [shapes.doomLogo, shapes.weblyneLogo]
+            origin: { y: 0.5 },
+            shapes: [shapes.killConfetti]
           });
         };
         script.onerror = () => {
