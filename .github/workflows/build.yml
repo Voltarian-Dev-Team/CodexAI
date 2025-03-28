@@ -31,5 +31,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: weplyne-doom-build
+          name: weblyne-doom
           path: build/
