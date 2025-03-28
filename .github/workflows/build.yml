@@ -28,6 +28,11 @@ jobs:
       - name: Compile WebLyne DOOM®
         run: .\build.cmd
 
+      - name: Verify Build Directory
+        run: |
+          echo "Contents of the build directory:"
+          dir build
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
