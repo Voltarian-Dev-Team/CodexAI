@@ -594,9 +594,6 @@
       `;
       document.body.appendChild(successDiv);
 
-      // Set the shapes for confetti effect
-      const shapes = { killConfetti: confetti.shapeFromText({ text: 'WebLyne', scalar }) };
-
       // Lazy load and trigger confetti
       const script = document.createElement("script");
       script.src =
@@ -606,7 +603,6 @@
           particleCount: 100,
           spread: 70,
           origin: { y: 0.5 },
-          shapes: [shapes.killConfetti]
         });
       };
       script.onerror = () => {
@@ -804,9 +800,6 @@
           ".weblyne-killcount-icon path",
         );
 
-        // Set the shapes for confetti effect
-        const shapes = { killConfetti: confetti.shapeFromText({ text: 'WebLyne', scalar }) };
-
         // Reset animations
         killcountButton.style.animation = "none";
         iconPath.style.animation = "none";
@@ -831,6 +824,9 @@
         script.src =
           "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
         script.onload = () => {
+          // Set the shapes for confetti effect
+          const shapes = { killConfetti: confetti.shapeFromText({ text: 'WebLyne', scalar }) };
+
           confetti({
             particleCount: 100,
             spread: 70,
