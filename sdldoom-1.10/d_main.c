@@ -518,7 +518,7 @@ void D_AdvanceDemo (void)
 	    if ( gamemode == retail )
 	      pagename = "CREDIT";
 	    else
-	      pagename = "HELP2";
+	      pagename = "CREDIT";
 	}
 	break;
       case 5:

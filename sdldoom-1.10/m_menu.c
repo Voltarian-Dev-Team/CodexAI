@@ -580,7 +580,7 @@ void M_DrawReadThis2(void) {
     break;
   case shareware:
   case registered:
-    V_DrawPatchDirect(0, 0, 0, W_CacheLumpName("HELP2", PU_CACHE));
+    V_DrawPatchDirect(0, 0, 0, W_CacheLumpName("CREDIT", PU_CACHE));
     break;
   default:
     break;

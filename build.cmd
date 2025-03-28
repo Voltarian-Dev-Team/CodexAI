@@ -26,5 +26,5 @@ for %%f in (%SOURCE_DIR%\*.c) do (
 set OUTPUT_HTML=%OUTPUT_DIR%\build\index.html
 
 :: Compile with emcc
-emcc %SRC_FILES% -o %OUTPUT_HTML% --preload-file %SOURCE_DIR% --preload-file doom.wad -s ALLOW_MEMORY_GROWTH=1 --shell-file %OUTPUT_DIR%\shell.html -s USE_SDL=1 2>..\error.log
+emcc %SRC_FILES% -o %OUTPUT_HTML% --preload-file %SOURCE_DIR% --preload-file doom2.wad -s ALLOW_MEMORY_GROWTH=1 --shell-file %OUTPUT_DIR%\shell.html -s USE_SDL=1 2>..\error.log
 pause
