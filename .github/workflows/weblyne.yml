@@ -29,7 +29,7 @@ jobs:
         run: choco install emscripten
 
       - name: Compile WebLyne DOOM®
-        run: .\build.cmd
+        run: cmd /c ".\build.cmd"
 
       - name: Commit and Push Changes
         run: |
