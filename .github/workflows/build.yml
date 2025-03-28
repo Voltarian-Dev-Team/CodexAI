@@ -41,7 +41,7 @@ jobs:
           emcc $SRC_FILES -o "$OUTPUT_HTML" --preload-file "$SOURCE_DIR" --preload-file doom2.wad -s ALLOW_MEMORY_GROWTH=1 --shell-file "$OUTPUT_DIR/shell.html" -s USE_SDL=1 2>../error.log
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
-          name: sdl-doom-build
+          name: weblyne-doom
           path: build/
