@@ -15,15 +15,12 @@ body {
 }
 
 #chat-container {
-    width: 50%;
-    max-width: 800px;
-    min-width: 300px;
+    width: 100%;
+    max-width: 100%;
     /* Enforce a minimum width to prevent collapsing */
-    height: 90vh;
-    margin: auto;
+    height: 100vh;
+    margin: 0 auto;
     background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -70,7 +67,7 @@ body {
     text-align: left;
 }
 
-.assistant-message {
+.model-message {
     align-self: flex-start;
     background-color: #f1f3f4;
     color: #202124;
@@ -208,70 +205,4 @@ button svg {
     font-size: 16px;
     line-height: 1.6;
     white-space: pre-wrap;
-}
-
-/* Mobile Layout for smaller screens (max-width: 900px) */
-@media (max-width: 900px) {
-    #chat-container {
-        width: 100%;
-        max-width: 100%;
-        /* Ensure no horizontal overflow */
-        height: 100vh;
-        margin: 0 auto;
-        border-radius: 0;
-        box-shadow: none;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    #chat-box {
-        padding: 12px;
-        scrollbar-width: none;
-    }
-
-    #chat-box::-webkit-scrollbar {
-        display: none;
-    }
-
-    .message {
-        margin-bottom: 12px;
-        max-width: 85%;
-    }
-
-    .user-message,
-    .assistant-message {
-        font-size: 12px;
-        line-height: 1.4;
-        padding: 8px 12px;
-        border-radius: 12px;
-    }
-
-    #chat-form {
-        padding: 8px;
-    }
-
-    #user-input {
-        padding: 8px 12px;
-        font-size: 12px;
-        border-radius: 20px;
-    }
-
-    button {
-        padding: 8px 12px;
-        font-size: 12px;
-        border-radius: 20px;
-    }
-
-    .form-btn-container button {
-        padding: 6px;
-        width: 40px;
-        height: 40px;
-    }
-
-    .code-wrapper {
-        font-size: 12px;
-        padding: 8px;
-        line-height: 1.4;
-    }
 }
